@@ -2,44 +2,39 @@
 
 import sys
 
-def check_rolls(line_list: list[list]) -> int:
-    '''
-    Takes in matrix with 3 rows and checks the middle row for 
-      eligible rows.
-    '''
-    eligible_rolls = 0
-
+def can_get_roll(line_list: list[list], roll_i: int) -> bool:
+    surround_list = list()
     row_len = len(line_list[1])
-    for column_i in range(row_len):
-        surround_list = list()
-        if line_list[1][column_i] == '@':
-            if column_i == 0:
-                # populate list clockwise 0-6 o'clock only
-                for row in range(3):
-                    for column in [column_i, column_i+1]:
-                        surround_list.append(line_list[row][column])
-                rolls_around = surround_list.count('@') - 1
+    if roll_i == 0:
+        # populate list clockwise 0-6 o'clock only
+        for row in range(3):
+            for column in [roll_i, roll_i+1]:
+                surround_list.append(line_list[row][column])
+        rolls_around = surround_list.count('@') - 1
+        rolls_around += surround_list.count('X')
 
-            elif column_i == row_len-1:
-                # populate list clockwise 6-0 o'clock only
-                for row in range(3):
-                    for column in [column_i-1, column_i]:
-                        surround_list.append(line_list[row][column])
-                rolls_around = surround_list.count('@') - 1
+    elif roll_i == row_len-1:
+        # populate list clockwise 6-0 o'clock only
+        for row in range(3):
+            for column in [roll_i-1, roll_i]:
+                surround_list.append(line_list[row][column])
+        rolls_around = surround_list.count('@') - 1
+        rolls_around += surround_list.count('X')
 
-            else:
-                for row in range(3):
-                    for column in [column_i-1, column_i, column_i+1]:
-                        surround_list.append(line_list[row][column])
-                rolls_around = surround_list.count('@') - 1
-            
-            if rolls_around < 4:
-                eligible_rolls += 1
+    else:
+        for row in range(3):
+            for column in [roll_i-1, roll_i, roll_i+1]:
+                surround_list.append(line_list[row][column])
+        rolls_around = surround_list.count('@') - 1
+        rolls_around += surround_list.count('X')
 
-    return eligible_rolls
+    if rolls_around < 4:
+        return True
+    else: 
+        return False
+
 
 answer = 0 
-
 with open(sys.argv[1], 'r') as input:
     # Grabs first 2 line_list to start checking rolls
     # Initializes with one empty row to check top row
@@ -51,17 +46,28 @@ with open(sys.argv[1], 'r') as input:
         line = list((input.readline()).strip())
 
     while line:
-        print(*line_list,' ',sep="\n")
-        answer += check_rolls(line_list)
+        num_columns = len(line_list[1])
+        for i in range(num_columns):
+            if line_list[1][i] == '@' and can_get_roll(line_list, i):
+                answer += 1
+                line_list[1][i] = 'X'
+                
+        print(''.join(line_list[1]),sep="\n")
         line_list = line_list[1:]
         line_list.append(line)
         line = list((input.readline()).strip())
 
     
-    print(*line_list,' ',sep="\n")
+    print(''.join(line_list[1]),sep="\n")
     line_list = line_list[1:]
     line_list.append(buffer)
-    print(*line_list,' ',sep="\n")
-    answer += check_rolls(line_list)
+    #print(*line_list,' ',sep="\n")
+
+    num_columns = len(line_list[1])
+    for i in range(num_columns):
+        if line_list[1][i] == '@' and can_get_roll(line_list, i):
+            answer += 1
+            line_list[1][i] = 'X'
+    print(''.join(line_list[1]),sep="\n")
 
 print(f"{answer=}")
