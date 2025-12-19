@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
+import sys
 
 answer = 0
 
-with open('input', 'r') as file:
+with open(sys.argv[1], 'r') as file:
     line = file.readline()
     while line:
         numbers = [int(i) for i in list(line.strip())]
         max_num = max(numbers)
         max_idx = numbers.index(max_num)
         current_batt = 0
-        if max_idx == 99:
+        if max_idx == len(numbers)-1:
             current_batt = ((max(numbers[:max_idx])*10) + max_num)
 
         else:
