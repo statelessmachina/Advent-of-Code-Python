@@ -39,8 +39,7 @@ with open(sys.argv[1], 'r') as file:
             
         answer += current_batt                          # Adds final battery to answer 
         line = file.readline()                          #  and reads next line
-        #print(f'{numbers}')                            # Debug statements
-        #print(f'{current_batt=} :: {answer=}')
+        print(f'{numbers}')                            # Debug statements
+        print(f'{current_batt=} :: {answer=}')
 
-    print(f'{answer=}')
-
+    print(f"{answer=}\n{line=}")
