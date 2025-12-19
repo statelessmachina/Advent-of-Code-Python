@@ -19,11 +19,9 @@ with open(sys.argv[1], 'r') as file:
 
         last_digit_check = len(line)-battery_len
         if max_idx == last_digit_check:
-            #current_batt = ((max(numbers[:max_idx])*10) + max_num)
             current_batt = int(line[last_digit_check:])
 
         else:
-            #current_batt = ((max_num * 10) + max(numbers[max_idx+1:]))
             current_batt = numbers[max_idx:]
             min_num = 0
             while len(current_batt) > battery_len:
@@ -37,8 +35,8 @@ with open(sys.argv[1], 'r') as file:
             current_batt = int(temp_ans)
             
         answer += current_batt
-        print(f'{numbers}')
-        print(f'{current_batt=} :: {answer=}')
+        #print(f'{numbers}')
+        #print(f'{current_batt=} :: {answer=}')
         line = file.readline()
 
     print(f'{answer=}')
