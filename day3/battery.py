@@ -14,7 +14,7 @@ with open(sys.argv[1], 'r') as file:
         line = line.strip()                             # strips '\n'
         numbers = [int(i) for i in list(line)]          # Turns input str of digits into int 
         max_num = max(numbers[:-battery_len])           # finds max digit in subset of num list, 
-                                                        # beginning to battery_len from the end
+                                                        # from beginning to end minus battery_len from the end
         max_idx = numbers.index(max_num)
         current_batt = 0
 
