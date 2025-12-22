@@ -1,73 +1,58 @@
 #!/usr/bin/env python3
 
 import sys
-
-def can_get_roll(line_list: list[list], roll_i: int) -> bool:
-    surround_list = list()
-    row_len = len(line_list[1])
-    if roll_i == 0:
-        # populate list clockwise 0-6 o'clock only
-        for row in range(3):
-            for column in [roll_i, roll_i+1]:
-                surround_list.append(line_list[row][column])
-        rolls_around = surround_list.count('@') - 1
-        rolls_around += surround_list.count('X')
-
-    elif roll_i == row_len-1:
-        # populate list clockwise 6-0 o'clock only
-        for row in range(3):
-            for column in [roll_i-1, roll_i]:
-                surround_list.append(line_list[row][column])
-        rolls_around = surround_list.count('@') - 1
-        rolls_around += surround_list.count('X')
-
-    else:
-        for row in range(3):
-            for column in [roll_i-1, roll_i, roll_i+1]:
-                surround_list.append(line_list[row][column])
-        rolls_around = surround_list.count('@') - 1
-        rolls_around += surround_list.count('X')
-
-    if rolls_around < 4:
-        return True
-    else: 
-        return False
-
+import numpy as np
 
 answer = 0 
 with open(sys.argv[1], 'r') as input:
-    # Grabs first 2 line_list to start checking rolls
-    # Initializes with one empty row to check top row
-    line = list((input.readline()).strip())
-    buffer = list('.' * len(line))
-    line_list = [buffer]
-    for i in range(2):
-        line_list.append(line)
-        line = list((input.readline()).strip())
+    line_array = np.array(list(list(line.strip()) for line in input))
+    row_len, col_len = line_array.shape
 
-    while line:
-        num_columns = len(line_list[1])
-        for i in range(num_columns):
-            if line_list[1][i] == '@' and can_get_roll(line_list, i):
-                answer += 1
-                line_list[1][i] = 'X'
-                
-        print(''.join(line_list[1]),sep="\n")
-        line_list = line_list[1:]
-        line_list.append(line)
-        line = list((input.readline()).strip())
+    for i in range(row_len):
+        for j in range(col_len):
+            
+            if line_array[i][j] == '@':
+                start_row = 0
+                end_row = 0
+                start_col = 0
+                end_col = 0
 
-    
-    print(''.join(line_list[1]),sep="\n")
-    line_list = line_list[1:]
-    line_list.append(buffer)
-    #print(*line_list,' ',sep="\n")
+                # Assign row indices for sub-matrices
+                if i == 0:
+                    start_row = i
+                else:
+                    start_row = i-1
 
-    num_columns = len(line_list[1])
-    for i in range(num_columns):
-        if line_list[1][i] == '@' and can_get_roll(line_list, i):
-            answer += 1
-            line_list[1][i] = 'X'
-    print(''.join(line_list[1]),sep="\n")
+                if i < row_len-2:
+                    end_row = i+2
+                else:
+                    end_row = None
+
+                # Assign column indices for sub-matrices
+                if j == 0:
+                    start_col = j
+                else:
+                    start_col = j-1
+
+                if j < col_len-2:
+                    end_col = j+2
+                else:
+                    end_col = None
+
+                sub_matrix = line_array[start_row:end_row,start_col:end_col]
+
+                unique,count = np.unique(sub_matrix,return_counts=True)
+                count -= 1
+                counts = dict(zip(unique,count))
+
+                #print(f"{i=} {j=}\n{sub_matrix}\n")
+             
+
+                if '@' in counts: 
+                   if counts['@'] < 4:
+                       answer += 1
+                #else:
+                #    print(f"{counts=}\n")
+
 
 print(f"{answer=}")
