@@ -49,12 +49,31 @@ def find_rolls(input_array: np.array) -> tuple([np.array, int]):
                     input_array[i][j] = np.str_('X')
 
     return (input_array, eligible_rolls)
+
+def clear_rolls(input_array: np.array) -> np.array:
+    row_len, col_len = input_array.shape
+
+    for i in range(row_len):
+        for j in range(col_len):
+            if input_array[i][j] == 'X':
+                input_array[i][j] = '.'
+
+    return input_array
     
 
 answer = 0 
 with open(sys.argv[1], 'r') as input:
     line_array = np.array(list(list(line.strip()) for line in input))
     next_array, eligible = find_rolls(line_array)
-    answer = eligible
 
-print(f"{next_array}\n{answer=}")
+    if len(sys.argv) > 2 and sys.argv[2] == "part2":
+        while eligible:
+            answer += eligible
+            next_array = clear_rolls(next_array)
+            next_array, eligible = find_rolls(line_array)
+
+    answer += eligible
+
+for line in next_array:
+    print(''.join(line))
+print(f"\n{answer=}")
