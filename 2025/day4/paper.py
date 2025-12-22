@@ -45,14 +45,8 @@ with open(sys.argv[1], 'r') as input:
                 count -= 1
                 counts = dict(zip(unique,count))
 
-                #print(f"{i=} {j=}\n{sub_matrix}\n")
-             
-
                 if '@' in counts: 
                    if counts['@'] < 4:
                        answer += 1
-                #else:
-                #    print(f"{counts=}\n")
-
 
 print(f"{answer=}")
