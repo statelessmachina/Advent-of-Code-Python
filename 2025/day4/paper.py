@@ -3,15 +3,14 @@
 import sys
 import numpy as np
 
-answer = 0 
-with open(sys.argv[1], 'r') as input:
-    line_array = np.array(list(list(line.strip()) for line in input))
-    row_len, col_len = line_array.shape
+def find_rolls(input_array: np.array) -> tuple([np.array, int]):
+    eligible_rolls = 0
+    row_len, col_len = input_array.shape
 
     for i in range(row_len):
         for j in range(col_len):
             
-            if line_array[i][j] == '@':
+            if input_array[i][j] == '@':
                 start_row = 0
                 end_row = 0
                 start_col = 0
@@ -39,14 +38,23 @@ with open(sys.argv[1], 'r') as input:
                 else:
                     end_col = None
 
-                sub_matrix = line_array[start_row:end_row,start_col:end_col]
+                sub_matrix = input_array[start_row:end_row,start_col:end_col]
 
-                unique,count = np.unique(sub_matrix,return_counts=True)
-                count -= 1
-                counts = dict(zip(unique,count))
+                # Count '@' and 'X' representing rolls 
+                surrounding_rolls = np.count_nonzero(sub_matrix == '@')-1
+                surrounding_rolls += np.count_nonzero(sub_matrix == 'X')
+                
+                if surrounding_rolls < 4:
+                    eligible_rolls += 1
+                    input_array[i][j] = np.str_('X')
 
-                if '@' in counts: 
-                   if counts['@'] < 4:
-                       answer += 1
+    return (input_array, eligible_rolls)
+    
 
-print(f"{answer=}")
+answer = 0 
+with open(sys.argv[1], 'r') as input:
+    line_array = np.array(list(list(line.strip()) for line in input))
+    next_array, eligible = find_rolls(line_array)
+    answer = eligible
+
+print(f"{next_array}\n{answer=}")
