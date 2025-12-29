@@ -1,16 +1,31 @@
 #!/usr/bin/env python3
 
+import copy
 import sys
 import numpy as np
 
 def find_rolls(input_array: np.array) -> tuple([np.array, int]):
+    '''
+    Takes an input array representing paper roll locations and finds the 
+    number of eligible rolls, returning the number and the original modified 
+    array where eligible rolls are replaced with an 'X'.
+
+    Parameters:
+    input_array (numpy.array): Array with empty slots marked with '.' and paper rolls marked with '@'.
+
+    Returns:
+    tuple([numpy.array, int]): Returns a tuple, the first value shows an array with an 'X' where the eligible paper rolls were removed.
+                               The second tuple value is the total number of eligible rolls that were removed/replaced.
+
+    '''
     eligible_rolls = 0
-    row_len, col_len = input_array.shape
+    input_copy = copy.deepcopy(input_array)
+    row_len, col_len = input_copy.shape
 
     for i in range(row_len):
         for j in range(col_len):
             
-            if input_array[i][j] == '@':
+            if input_copy[i][j] == '@':
                 start_row = 0
                 end_row = 0
                 start_col = 0
@@ -38,7 +53,7 @@ def find_rolls(input_array: np.array) -> tuple([np.array, int]):
                 else:
                     end_col = None
 
-                sub_matrix = input_array[start_row:end_row,start_col:end_col]
+                sub_matrix = input_copy[start_row:end_row,start_col:end_col]
 
                 # Count '@' and 'X' representing rolls 
                 surrounding_rolls = np.count_nonzero(sub_matrix == '@')-1
@@ -46,19 +61,30 @@ def find_rolls(input_array: np.array) -> tuple([np.array, int]):
                 
                 if surrounding_rolls < 4:
                     eligible_rolls += 1
-                    input_array[i][j] = np.str_('X')
+                    input_copy[i][j] = np.str_('X')
 
-    return (input_array, eligible_rolls)
+    return (input_copy, eligible_rolls)
 
 def clear_rolls(input_array: np.array) -> np.array:
-    row_len, col_len = input_array.shape
+    '''
+    Modifies an input array by removing the 'X' representing removed paper rolls (as in the output of the 'find_rolls' function).
+
+    Parameters:
+    input_array (numpy.array): An array showing paper roll locations with 'X' representing previously removed rolls.
+
+    Returns:
+    numpy.array: The input array with any 'X' symbols removed. 
+    
+    '''
+    input_copy = copy.deepcopy(input_array)
+    row_len, col_len = input_copy.shape
 
     for i in range(row_len):
         for j in range(col_len):
-            if input_array[i][j] == 'X':
-                input_array[i][j] = '.'
+            if input_copy[i][j] == 'X':
+                input_copy[i][j] = '.'
 
-    return input_array
+    return input_copy
     
 
 answer = 0 
@@ -70,7 +96,7 @@ with open(sys.argv[1], 'r') as input:
         while eligible:
             answer += eligible
             next_array = clear_rolls(next_array)
-            next_array, eligible = find_rolls(line_array)
+            next_array, eligible = find_rolls(next_array)
 
     answer += eligible
 
