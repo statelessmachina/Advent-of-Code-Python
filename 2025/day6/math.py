@@ -5,5 +5,7 @@ import numpy as np
 
 answer = 0
 with open(sys.argv[1], 'r') as input:
-    input_array = list(list(line.replace('\n',' ') for line in input))
-    print(input_array)
+    input_array = np.array(list(line.replace('\n','').rsplit() for line in input))
+    
+    for col in range(len(input_array[0])):
+        print(input_array[:,col])
